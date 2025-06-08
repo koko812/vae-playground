@@ -1,0 +1,173 @@
+[
+  {
+    "latent_dim": 2,
+    "depth": 1,
+    "activation": "ReLU",
+    "loss": 117.029695,
+    "duration_sec": 13.76,
+    "timestamp": "2025-06-09T04:44:38.597218",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 17,
+      "peak_memory_MB": 21
+    }
+  },
+  {
+    "latent_dim": 2,
+    "depth": 1,
+    "activation": "LeakyReLU",
+    "loss": 116.972189,
+    "duration_sec": 9.24,
+    "timestamp": "2025-06-09T04:44:48.713202",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 17,
+      "peak_memory_MB": 21
+    }
+  },
+  {
+    "latent_dim": 2,
+    "depth": 2,
+    "activation": "ReLU",
+    "loss": 117.213945,
+    "duration_sec": 9.6,
+    "timestamp": "2025-06-09T04:44:58.756250",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 18,
+      "peak_memory_MB": 21
+    }
+  },
+  {
+    "latent_dim": 2,
+    "depth": 2,
+    "activation": "LeakyReLU",
+    "loss": 117.678464,
+    "duration_sec": 9.36,
+    "timestamp": "2025-06-09T04:45:08.549090",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 18,
+      "peak_memory_MB": 21
+    }
+  },
+  {
+    "latent_dim": 8,
+    "depth": 1,
+    "activation": "ReLU",
+    "loss": 97.629018,
+    "duration_sec": 9.12,
+    "timestamp": "2025-06-09T04:45:18.109981",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 17,
+      "peak_memory_MB": 21
+    }
+  },
+  {
+    "latent_dim": 8,
+    "depth": 1,
+    "activation": "LeakyReLU",
+    "loss": 98.740986,
+    "duration_sec": 9.14,
+    "timestamp": "2025-06-09T04:45:27.703180",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 17,
+      "peak_memory_MB": 21
+    }
+  },
+  {
+    "latent_dim": 8,
+    "depth": 2,
+    "activation": "ReLU",
+    "loss": 112.530275,
+    "duration_sec": 9.37,
+    "timestamp": "2025-06-09T04:45:37.527505",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 18,
+      "peak_memory_MB": 21
+    }
+  },
+  {
+    "latent_dim": 8,
+    "depth": 2,
+    "activation": "LeakyReLU",
+    "loss": 112.06294,
+    "duration_sec": 9.24,
+    "timestamp": "2025-06-09T04:45:47.210180",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 18,
+      "peak_memory_MB": 21
+    }
+  },
+  {
+    "latent_dim": 32,
+    "depth": 1,
+    "activation": "ReLU",
+    "loss": 96.533896,
+    "duration_sec": 9.07,
+    "timestamp": "2025-06-09T04:45:56.705513",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 17,
+      "peak_memory_MB": 21
+    }
+  },
+  {
+    "latent_dim": 32,
+    "depth": 1,
+    "activation": "LeakyReLU",
+    "loss": 95.713681,
+    "duration_sec": 9.08,
+    "timestamp": "2025-06-09T04:46:06.220675",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 17,
+      "peak_memory_MB": 21
+    }
+  },
+  {
+    "latent_dim": 32,
+    "depth": 2,
+    "activation": "ReLU",
+    "loss": 112.527789,
+    "duration_sec": 9.34,
+    "timestamp": "2025-06-09T04:46:15.999932",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 18,
+      "peak_memory_MB": 22
+    }
+  },
+  {
+    "latent_dim": 32,
+    "depth": 2,
+    "activation": "LeakyReLU",
+    "loss": 110.047749,
+    "duration_sec": 9.31,
+    "timestamp": "2025-06-09T04:46:26.432533",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 18,
+      "peak_memory_MB": 22
+    }
+  },
+  {
+    "total_duration_sec": 122.03
+  }
+]
