@@ -1,0 +1,36 @@
+# Python バイトコード
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+
+# 仮想環境
+.env/
+.venv/
+venv/
+env/
+
+# Jupyter Notebook チェックポイント（もし追加した場合）
+.ipynb_checkpoints/
+
+# OSによる不要ファイル
+.DS_Store
+Thumbs.db
+
+# VSCode 設定
+.vscode/
+
+# モデルや中間ファイル（必要に応じて）
+*.pt
+*.pth
+*.h5
+
+# サンプル出力画像など（必要に応じて）
+samples/*.png
+samples/*.jpg
+
+# ログやキャッシュ
+*.log
+*.tmp
+.cache/
+
