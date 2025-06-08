@@ -1,0 +1,181 @@
+[
+  {
+    "mode": "AE",
+    "latent_dim": 2,
+    "depth": 1,
+    "activation": "ReLU",
+    "loss": 116.3443,
+    "duration_sec": 12.15,
+    "timestamp": "2025-06-09T05:34:12.676001",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "AE",
+    "latent_dim": 2,
+    "depth": 1,
+    "activation": "LeakyReLU",
+    "loss": 117.2728,
+    "duration_sec": 9.56,
+    "timestamp": "2025-06-09T05:34:23.092749",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "AE",
+    "latent_dim": 2,
+    "depth": 2,
+    "activation": "ReLU",
+    "loss": 118.6915,
+    "duration_sec": 9.81,
+    "timestamp": "2025-06-09T05:34:33.351497",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "AE",
+    "latent_dim": 2,
+    "depth": 2,
+    "activation": "LeakyReLU",
+    "loss": 115.1689,
+    "duration_sec": 9.7,
+    "timestamp": "2025-06-09T05:34:43.489457",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "AE",
+    "latent_dim": 8,
+    "depth": 1,
+    "activation": "ReLU",
+    "loss": 98.4114,
+    "duration_sec": 9.32,
+    "timestamp": "2025-06-09T05:34:53.251759",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "AE",
+    "latent_dim": 8,
+    "depth": 1,
+    "activation": "LeakyReLU",
+    "loss": 98.3189,
+    "duration_sec": 9.28,
+    "timestamp": "2025-06-09T05:35:02.970718",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "AE",
+    "latent_dim": 8,
+    "depth": 2,
+    "activation": "ReLU",
+    "loss": 109.9158,
+    "duration_sec": 9.63,
+    "timestamp": "2025-06-09T05:35:13.051910",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "AE",
+    "latent_dim": 8,
+    "depth": 2,
+    "activation": "LeakyReLU",
+    "loss": 108.5475,
+    "duration_sec": 9.57,
+    "timestamp": "2025-06-09T05:35:23.060208",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "VAE",
+    "latent_dim": 2,
+    "depth": 1,
+    "activation": "ReLU",
+    "loss": 139.2315,
+    "duration_sec": 10.22,
+    "timestamp": "2025-06-09T05:35:33.715049",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "VAE",
+    "latent_dim": 2,
+    "depth": 1,
+    "activation": "LeakyReLU",
+    "loss": 139.4472,
+    "duration_sec": 9.82,
+    "timestamp": "2025-06-09T05:35:43.975564",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "VAE",
+    "latent_dim": 2,
+    "depth": 2,
+    "activation": "ReLU",
+    "loss": 131.2981,
+    "duration_sec": 10.46,
+    "timestamp": "2025-06-09T05:35:54.865903",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "VAE",
+    "latent_dim": 2,
+    "depth": 2,
+    "activation": "LeakyReLU",
+    "loss": 130.7405,
+    "duration_sec": 10.49,
+    "timestamp": "2025-06-09T05:36:06.590828",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "VAE",
+    "latent_dim": 8,
+    "depth": 1,
+    "activation": "ReLU",
+    "loss": 139.8318,
+    "duration_sec": 10.16,
+    "timestamp": "2025-06-09T05:36:17.194117",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "VAE",
+    "latent_dim": 8,
+    "depth": 1,
+    "activation": "LeakyReLU",
+    "loss": 139.3776,
+    "duration_sec": 10.12,
+    "timestamp": "2025-06-09T05:36:27.755487",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "VAE",
+    "latent_dim": 8,
+    "depth": 2,
+    "activation": "ReLU",
+    "loss": 131.8638,
+    "duration_sec": 10.29,
+    "timestamp": "2025-06-09T05:36:38.483853",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 21
+  },
+  {
+    "mode": "VAE",
+    "latent_dim": 8,
+    "depth": 2,
+    "activation": "LeakyReLU",
+    "loss": 132.2157,
+    "duration_sec": 10.29,
+    "timestamp": "2025-06-09T05:36:49.209140",
+    "device": "NVIDIA RTX 6000 Ada Generation",
+    "peak_memory_MB": 22
+  },
+  {
+    "total_duration_sec": 171.14
+  }
+]
