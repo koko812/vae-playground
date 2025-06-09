@@ -147,13 +147,14 @@ streamlit run visualize/visualize_latent_interactive.py
    - 解析 notebook はそのまま動作。古い `loss_fn_vae` を import しているスクリプトは要修正  
 
 6. **具体的な使い方や CLI 実行例**
-   ```bash
+
+```bash
    # β 最大値 4.0・Free Bits 0.1 で学習
    python train/run_convVAE_grid.py \
        --config configs/free_bits.yaml \
        --beta_max 4.0 \
        --free_bits_eps 0.1
-````
+```
 
 7. **コメントや議論の抜粋**
 
@@ -225,7 +226,7 @@ streamlit run visualize/visualize_latent_interactive.py
    - 共通 Trainer で `model` と `loss_fn` を DI する構造にしたため、呼び出し側の修正最小限。
 
 6. **具体的な使い方や CLI 実行例**
-   ```bash
+```bash
    # MLP-VAE / BCE / β=1.0 / warmup 0
    python train/run_vae_grid.py --arch mlp \
        --latent_dim 2 --beta_max 1 --warmup 0 \
@@ -235,7 +236,7 @@ streamlit run visualize/visualize_latent_interactive.py
    python train/run_vae_grid.py --arch conv \
        --latent_dim 2 --beta_max 4 --warmup 1000 \
        --loss mse --exp_name conv_mse_latent2
-````
+```
 
 7. **コメントや議論の抜粋**
 
@@ -440,7 +441,7 @@ uv run train/run_convVAE_grid.py \
 ```bash
 # AE / VAE を一括比較（latent=2,8 / depth=1,2）
 uv run train/run_ae_vae_grid.py
-````
+```
 
 生成物：
 
