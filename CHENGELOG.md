@@ -64,7 +64,7 @@ uv run train/run_convVAE_grid.py \
     --epochs 5 \
     --batch-size 256 \
     --lr 1e-4
-````
+```
 
 生成物
 
