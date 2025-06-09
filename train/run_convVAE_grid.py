@@ -21,12 +21,12 @@ conv_configs = [
     {
         "name": "free_bits_varbias_initialize_anealing_layer3_conv_b_32_avg_loss_5_epoch_dec_beta_1_latent2_large",
         "latent_dim": 2,
-        "enc_channels": [1, 32, 64],
+        "enc_channels": [1, 64, 128],
     },
     {
         "name": "free_bits_varbias_initialize_anealing_layer3_conv_b_32_avg_loss_5_epoch_dec_beta_1_latent2_medium",
         "latent_dim": 2,
-        "enc_channels": [1, 8, 16],
+        "enc_channels": [1, 16, 64],
     },
 ]
 
@@ -203,6 +203,8 @@ for i, cfg in enumerate(conv_configs, 1):
         f"[{i}/{len(conv_configs)}] {config_name} → avg_loss={log['loss']}, time={duration}s"
     )
     save_reconstruction_image(model, config_name)
+    torch.save(model.state_dict(), f"trained_models/{config_name}_vae.pt")
+
 
 
 # ---------- Save Logs ----------

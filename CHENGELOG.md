@@ -1,3 +1,43 @@
+# 🔧 CHENGELOG-v1.3 VAE-Playground 2025-06-10
+
+---
+
+## 1. **目的・背景**
+
+- **可視化と操作性の両立**  
+  これまで latent space は静的 scatter 図や GIF で確認するのみだった。  
+  *「z を手動で動かしながら即座に再構成画像を確認したい」* というニーズが高まり、  
+  **Streamlit** で GUI を実装し、研究デモでも使えるインタラクティブ環境を目指した。
+
+---
+
+## 2. **主な変更点**
+
+| 区分 | ファイル / モジュール | 内容 |
+|------|----------------------|------|
+| ➕ **追加** | `visualize/visualize_latent_interactive.py` | Streamlit UI（スライダー2本 & 画像2枚） |
+| ➕ **追加** | `samples/latent_vis/*.npy` | scatter 用 `Z` / `labels` キャッシュ |
+| 🔄 **更新** | `models/conv_vae.py` | `encode` → `mu, logvar` を返すメソッド整理 |
+| 🔄 **更新** | `visualize_latent_grid.py` | `np.save` で scatter データも保存 |
+| ⚙️ **設定** | Streamlit page config (`wide` レイアウト) | 最上部に配置必須に修正 |
+
+---
+
+## 3. **設計変更の内容と理由**
+
+|  | Before | After | :bulb: 理由・期待効果 |
+|---|--------|-------|-----------------------|
+| :🔹: UI 構成 | 静的 matplotlib 画像のみ | Streamlit 2 カラム (`scatter`, `decode img`) + 上部スライダー | **操作→即結果** を 1 画面に集約 |
+| :🔹: データ受け渡し | `Z`,`Y` を都度計算 | `*.npy` でキャッシュ / `@st.cache_resource` | 起動を <1 s に短縮 |
+| :🔹: モデル呼び出し | `model.encoder` を直接使用 | 統一して `model.encode` / `model.decode` | コード可読性 & API 一貫性 |
+| :🔹: レイアウト | `st.columns([3,2])` | `st.columns([1,1], gap="large")` | **画像と散布図を同サイズ** で横並び
+
+</br>
+</br>
+</br>
+</br>
+</br>
+
 # 🔧 CHENGELOG-v1.2 VAE-Playground 2025-06-09
 
 1. **目的・背景**
