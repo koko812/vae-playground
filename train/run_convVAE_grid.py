@@ -1,19 +1,25 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent));
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 import os, json, time
 from datetime import datetime
 from models.conv_ae import ConvAutoEncoder
+from models.conv_vae import ConvVAE
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 # ---------- Config List (プリセット) ----------
 conv_configs = [
-    {"name": "small", "latent_dim": 8, "enc_channels": [1, 8, 16]},
-    {"name": "medium", "latent_dim": 16, "enc_channels": [1, 16, 32]},
-    {"name": "large", "latent_dim": 32, "enc_channels": [1, 32, 64]},
+    {"name": "b_128_avg_loss_5_epoch_dec+1_beta_0.1_latent8_small", "latent_dim": 8, "enc_channels": [1, 8, 16]},
+    {"name": "b_128_avg_loss_5_epoch_dec+1_beta_0.1_latent8_medium", "latent_dim": 8, "enc_channels": [1, 16, 32]},
+    {"name": "b_128_avg_loss_5_epoch_dec+1_beta_0.1_latent8_large", "latent_dim": 8, "enc_channels": [1, 32, 64]},
 ]
 
 # ---------- Setup ----------
@@ -26,7 +32,7 @@ train_loader = DataLoader(
 )
 os.makedirs("logs", exist_ok=True)
 os.makedirs("samples", exist_ok=True)
-log_path = "logs/conv_ae_logs.json"
+log_path = "logs/b_128_avg_loss_5_epoch_dec_plus_one_beta_latent_8_conv_ae_logs.json"
 all_logs = []
 
 # ---------- Utilities ----------
@@ -34,53 +40,87 @@ def save_reconstruction_image(model, config_name):
     model.eval()
     with torch.no_grad():
         test_batch = next(iter(train_loader))[0][:8].to(device)
-        recon = model(test_batch)
+        recon, *_ = model(test_batch)  # ← 出力が tuple の場合
 
     fig, axs = plt.subplots(2, 8, figsize=(12, 3))
     for i in range(8):
         axs[0, i].imshow(test_batch[i][0].cpu(), cmap="gray")
         axs[0, i].axis("off")
-        axs[1, i].imshow(recon[i][0].cpu(), cmap="gray")
+        print(recon[i][0].shape)
+        axs[1, i].imshow(recon[i][0].cpu().numpy(), cmap="gray")
         axs[1, i].axis("off")
 
-    plt.savefig(f"samples/{config_name}.png")
+    plt.savefig(f"samples/conv_VAE/{config_name}.png")
     plt.close()
 
-def train(model):
-    model.to(device)
-    model.train()
-    optimizer = optim.Adam(model.parameters(), lr=1e-3)
-    criterion = nn.BCELoss()
+def loss_fn_vae(x, x_hat, mu, logvar, beta=0.1):
+    batch_size = x.size(0)
+    # ❶ 再構成損失（1サンプル平均）
+    recon_loss = F.binary_cross_entropy(x_hat, x, reduction="sum") / batch_size
+    # ❷ KL divergence（1サンプル平均）
+    kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp()) / batch_size
+    # ❸ 合計ロス（1サンプルあたり）
+    return recon_loss + beta * kl_div, recon_loss, kl_div
 
-    total_loss = 0
-    for x, _ in tqdm(train_loader, desc="Training", leave=False):
+
+def train(model, dataloader, optimizer, device):
+    model.train()
+    total_loss, total_recon, total_kl = 0, 0, 0
+
+    for x, _ in tqdm(dataloader):
         x = x.to(device)
         optimizer.zero_grad()
-        x_hat = model(x)
-        loss = criterion(x_hat, x)
+
+        # VAE の出力（再構成、平均、分散）
+        x_hat, mu, logvar = model(x)
+
+        loss, recon_loss, kl_div = loss_fn_vae(x, x_hat, mu, logvar)
         loss.backward()
         optimizer.step()
+
         total_loss += loss.item()
-    return total_loss
+        total_recon += recon_loss.item()
+        total_kl += kl_div.item()
+
+    return total_loss / len(dataloader.dataset), total_recon / len(dataloader.dataset), total_kl / len(dataloader.dataset)
+
 
 # ---------- Main Grid Loop ----------
-print("\U0001F50D 実行するConvAE構成一覧:")
+print("\U0001F50D 実行するConvVAE構成一覧:")
 for i, cfg in enumerate(conv_configs, 1):
     print(f"  [{i}/{len(conv_configs)}] {cfg}")
 
 global_start_time = time.time()
-print("\n\U0001F680 ConvAEグリッドサーチ開始...\n")
+print("\n\U0001F680 ConvVAEグリッドサーチ開始...\n")
+
+
+EPOCHS = 5  # ← お好きなエポック数に変更可
 
 for i, cfg in enumerate(conv_configs, 1):
-    model = ConvAutoEncoder(cfg)
+    model = ConvVAE(cfg).to(device)
     config_name = cfg["name"]
-    
+    optimizer = optim.Adam(model.parameters(), lr=1e-4)  # ← 必要に応じて学習率も調整
+
     if torch.cuda.is_available():
         torch.cuda.reset_peak_memory_stats()
         torch.cuda.synchronize()
 
     start_time = time.time()
-    loss = train(model)
+
+    # --- エポックループ ---
+    total_loss, total_recon, total_kl = 0, 0, 0
+    for epoch in range(EPOCHS):
+        loss, recon, kl = train(model, train_loader, optimizer, device)
+        total_loss += loss
+        total_recon += recon
+        total_kl += kl
+        print(f"  Epoch {epoch+1}/{EPOCHS} | loss={loss:.2f}, recon={recon:.2f}, kl={kl:.2f}")
+
+    # 平均を取る
+    avg_loss = total_loss / EPOCHS
+    avg_recon = total_recon / EPOCHS
+    avg_kl = total_kl / EPOCHS
+
     duration = round(time.time() - start_time, 2)
 
     if torch.cuda.is_available():
@@ -99,7 +139,9 @@ for i, cfg in enumerate(conv_configs, 1):
         "name": config_name,
         "latent_dim": cfg["latent_dim"],
         "enc_channels": cfg["enc_channels"],
-        "loss": round(loss, 6),
+        "loss": round(avg_loss, 6),
+        "recon_loss": round(avg_recon, 6),
+        "kl_div": round(avg_kl, 6),
         "duration_sec": duration,
         "timestamp": datetime.now().isoformat(),
         "gpu": {
@@ -109,9 +151,11 @@ for i, cfg in enumerate(conv_configs, 1):
             "peak_memory_MB": peak_memory
         }
     }
+
     all_logs.append(log)
-    print(f"[{i}/{len(conv_configs)}] {config_name} → loss={log['loss']}, time={duration}s")
+    print(f"[{i}/{len(conv_configs)}] {config_name} → avg_loss={log['loss']}, time={duration}s")
     save_reconstruction_image(model, config_name)
+
 
 # ---------- Save Logs ----------
 total_duration = round(time.time() - global_start_time, 2)

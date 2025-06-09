@@ -1,0 +1,65 @@
+[
+  {
+    "name": "b_128_avg_loss_5_epoch_dec+1_beta_0.1_latent8_small",
+    "latent_dim": 8,
+    "enc_channels": [
+      1,
+      8,
+      16
+    ],
+    "loss": 1.761276,
+    "recon_loss": 1.701483,
+    "kl_div": 0.597937,
+    "duration_sec": 65.39,
+    "timestamp": "2025-06-09T17:19:18.546940",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 16,
+      "peak_memory_MB": 22
+    }
+  },
+  {
+    "name": "b_128_avg_loss_5_epoch_dec+1_beta_0.1_latent8_medium",
+    "latent_dim": 8,
+    "enc_channels": [
+      1,
+      16,
+      32
+    ],
+    "loss": 1.510916,
+    "recon_loss": 1.470271,
+    "kl_div": 0.406452,
+    "duration_sec": 61.31,
+    "timestamp": "2025-06-09T17:20:20.852363",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 17,
+      "peak_memory_MB": 27
+    }
+  },
+  {
+    "name": "b_128_avg_loss_5_epoch_dec+1_beta_0.1_latent8_large",
+    "latent_dim": 8,
+    "enc_channels": [
+      1,
+      32,
+      64
+    ],
+    "loss": 1.183693,
+    "recon_loss": 1.150991,
+    "kl_div": 0.327015,
+    "duration_sec": 60.31,
+    "timestamp": "2025-06-09T17:21:21.668223",
+    "gpu": {
+      "device_name": "NVIDIA RTX 6000 Ada Generation",
+      "device_count": 4,
+      "used_memory_MB": 18,
+      "peak_memory_MB": 38
+    }
+  },
+  {
+    "total_duration_sec": 192.7
+  }
+]
