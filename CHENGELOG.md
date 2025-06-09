@@ -1,3 +1,157 @@
+# 🔧 CHENGELOG-v1.2 VAE-Playground 2025-06-09
+
+1. **目的・背景**
+   - MNIST で *latent_dim = 2* の Conv-VAE が **posterior collapse** を起こしやすく、KL がほぼ 0 に張り付く問題を解決したい  
+   - 既存の β アニーリングと Decoder 弱化だけでは限界があったため、論文の知見（Free Bits, KL warm-up）を実装して学習安定性を検証  
+
+2. **主な変更点**
+   - ➕ `loss_fn_vae()` に **Free Bits ε=0.1** を導入  
+   - 🔄 `train()` に **β(t) 更新** と **free_bits_eps** パラメータを追加  
+   - 🔧 `compute_beta()` をシグモイド曲線で再実装（より滑らかに warm-up）  
+   - ➕ `config/free_bits.yaml` ― ハイパーパラメータを外部化  
+   - 🗑️ 削除: 旧 `loss_fn_vae`（Free Bits 無し版）  
+
+3. **設計変更の内容と理由**
+   - :🔹: `loss_fn_vae`
+     - **Before**: `KL_total = mean(KL)`  
+     - **After** : `KL_total = sum( clamp(mean(KL_i), ε) )`  
+     - **Reason**: 各潜在次元に最低情報量 ε を保証して z 利用を強制（collapse 防止）
+   - :🔹: `train`
+     - **Before**: `beta = linear(epoch)`  
+     - **After** : `beta = sigmoid(step)` + `free_bits_eps` 引数  
+     - **Reason**: ステップベースで滑らかに KL を導入しつつ Free Bits を容易に切替え  
+
+4. **検討した別案や悩んだポイント**
+   | 案 | 長所 | 短所 |
+   |---|---|---|
+   | Capacity Annealing (C-VAE) | 論文実績あり | 実装が複雑・チューニング項目多い |
+   | Latent_dim を 4 に増やす | 再構成良好 | 可視化しづらく 2 次元可視化ができない |
+   | Perceptual Loss 併用 | シャープな画像 | 追加モデルが要る・実験スコープ超過 |
+
+5. **既存コードとの関係・依存箇所**
+   - `run_convVAE_grid.py` から `loss_fn_vae` 呼び出し箇所が変わる（引数追加）  
+   - 解析 notebook はそのまま動作。古い `loss_fn_vae` を import しているスクリプトは要修正  
+
+6. **具体的な使い方や CLI 実行例**
+   ```bash
+   # β 最大値 4.0・Free Bits 0.1 で学習
+   python train/run_convVAE_grid.py \
+       --config configs/free_bits.yaml \
+       --beta_max 4.0 \
+       --free_bits_eps 0.1
+````
+
+7. **コメントや議論の抜粋**
+
+   > *「β=1 にしても KL が上がりませんねえ」*
+   > *「Free Bits で最低 ε ビット通してみましょう」*
+   > *「latent 4 にすると綺麗だが 2 にこだわりたい」*
+
+8. **既知のバグ・今の限界**
+
+   * ε を 0.2 以上にすると初期学習が発散するケースあり
+   * 生成画像が依然として *0/8/9* など曲線の多い数字でぼやける
+   * `decoder_large` プリセットではメモリ 8 GB GPU で OOM の可能性
+
+9. **今後の TODO リスト**
+
+   * [ ] ε を Epoch に応じて動的に増やす “Adaptive Free Bits”
+   * [ ] Per-pixel BCE → Perceptual Loss への切替え実験
+   * [ ] β-VAE, InfoVAE の再現コードを導入して比較ベンチマーク
+   * [ ] latent 2 の可視化ツール（グリッド・補間アニメ GIF 出力）
+
+10. **感想・思ったこと**
+
+    * Free Bits は実装がシンプルで効果も即確認できたが、MNIST latent=2 の壁は厚い
+    * とはいえ *KL ≈ 0.12 → 0.25* まで押し上げられ、潜在空間の利用は確実に改善
+    * 次は β-VAE のリファレンス実装を “答え合わせ” に使い、ブレークスルーを狙いたい 🚀
+
+</br>
+</br>
+</br>
+</br>
+</br>
+
+# 🔧 CHENGELOG-v1.2 VAE-Playground 2025-06-09
+
+1. **目的・背景**
+   - ConvVAE で *latent_dim = 2* を維持しつつ KL を活かす実験を続けたが **posterior collapse** が解消できず学習が停滞。
+   - 可視化重視のフェーズに立ち返り、**シンプルな MLP-VAE** へ一時的に軸足を移すことで  
+     - latent 空間の挙動を確認  
+     - KL 制御の感覚を取り戻す  
+     - Conv 構造へ再応用する足掛かりを得る  
+     ことを目的とした。
+
+2. **主な変更点**
+   | 区分 | ファイル | 内容 |
+   |------|----------|------|
+   | ➕ 追加 | `models/mlp_vae.py` | 全結合 2 層 Encoder / Decoder の簡潔な VAE 実装 |
+   | ➖ 削除 | ― | ConvDecoder 拡張層のコメントアウトを正式に削除 |
+   | ✏️ 変更 | `train/run_convVAE_grid.py` → `train/run_vae_grid.py` | Conv/MLP を CLI 引数 `--arch` で切替可 |
+   | ✏️ 変更 | `loss_utils.py` | `mse_loss` オプションを追加（`--loss mse`） |
+   | ➕ 追加 | `utils/plot_latent.py` | 2D scatter 可視化スクリプト（μ vs label） |
+
+3. **設計変更の内容と理由**
+   - :🔹: **クラス** `ConvVAE` → `MLPVAE`
+     - **Before**: `Conv2d→Flatten→fc_mu/logvar→fc_decode→ConvTranspose`  
+       **After** : `Linear→ReLU→Linear→μ/σ  …  Linear→ReLU→Linear→Sigmoid`
+     - **理由**: Decoder の過剰表現力を排除し、KL が機能する“原理確認”モードへ。
+   - :🔹: **モジュール** `train/run_*`
+     - **Before**: Conv 固定、β=4 annealing 固定  
+       **After** : `--arch {conv,mlp}`、`--beta_max`、`--warmup` を CLI で可変化
+     - **理由**: 実験グリッドを最小コード変更で横展開できるよう汎用化。
+
+4. **検討した別案や悩んだポイント**
+   - **ConvEncoder + LinearDecoder** によるハイブリッド案 → Conv 出力サイズ調整が煩雑で後回し。
+   - **InfoVAE / β-TCVAE** の導入 → ライブラリ依存が増えるため現段階では見送り。
+   - **Gumbel-Softmax VAE** → 離散潜在は可視化しづらく今回の目的に合わない。
+
+5. **既存コードとの関係・依存箇所**
+   - 旧 `ConvVAE` はそのまま残しているため互換性を壊さない。
+   - 共通 Trainer で `model` と `loss_fn` を DI する構造にしたため、呼び出し側の修正最小限。
+
+6. **具体的な使い方や CLI 実行例**
+   ```bash
+   # MLP-VAE / BCE / β=1.0 / warmup 0
+   python train/run_vae_grid.py --arch mlp \
+       --latent_dim 2 --beta_max 1 --warmup 0 \
+       --loss bce --exp_name mlp_bce_latent2
+
+   # Conv-VAE / MSE / β-annealing
+   python train/run_vae_grid.py --arch conv \
+       --latent_dim 2 --beta_max 4 --warmup 1000 \
+       --loss mse --exp_name conv_mse_latent2
+````
+
+7. **コメントや議論の抜粋**
+
+   > *「Decoder 弱めても KL=0.02… これもう構造じゃなくて“zを使う圧”が必要ですね」*
+   > *「MLP版で成功体験 ⇒ Conv に逆輸入しよう」*
+
+8. **既知のバグ・今の限界**
+
+   * MLP-VAE は入力を `Flatten` するため 28×28 固定。CIFAR 等への汎用化は未対応。
+   * Conv 版で `center_crop_28` を外すとサイズ誤差が再発する可能性がある。
+
+9. **今後の TODO リスト**
+
+   * [ ] MLP-VAE で KL ≈ 0.5〜1.0 の安定点を検証
+   * [ ] ConvEncoder + LinearDecoder ハイブリッド試作
+   * [ ] 分類補助ヘッド (`mu → labels`) 追加実験
+   * [ ] 学習ログを Neptune / wandb に統合
+   * [ ] README に実験結果ギャラリーを追加
+
+10. **感想・思ったこと**
+
+    * ConvVAE をいじり倒したおかげで「KL が働くとはどういうことか」を深く体感。
+    * **一度“初心”に戻る勇気**は案外大事。MLP-VAEで得た知見を武器に、次はまた Conv でリベンジする！
+
+</br>
+</br>
+</br>
+</br>
+</br>
+
 # 🔧 CHENGELOG-v1.1 VAE-Playground 2025-06-09
 
 ---

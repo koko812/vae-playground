@@ -1,6 +1,12 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torchvision.transforms.functional as TF
+
+
+def center_crop_28(x):
+    return TF.center_crop(x, [28, 28])
+
 
 class ConvVAE(nn.Module):
     def __init__(self, config):
@@ -30,25 +36,30 @@ class ConvVAE(nn.Module):
         # --- Decoder ---
         self.fc_decode = nn.Linear(self.latent_dim, enc_out_dim)
 
-        decoder_layers = []
-        reversed_channels = list(reversed(self.enc_channels[1:]))
+        # reversed_channels = list(reversed(self.enc_channels[1:]))  # たとえば [128, 64]
 
-        # 1. 追加：最初に "拡張用" チャネルを増やす層
-        decoder_layers.append(nn.ConvTranspose2d(reversed_channels[0], reversed_channels[0], kernel_size=3, stride=1, padding=1))
+        decoder_layers = []
+
+        # 入力チャンネル数は self._enc_out_shape[0]（= encoder の出力チャンネル数）
+        in_channels = self._enc_out_shape[0]
+
+        # 1. アップサンプリング層（例：1段のみ）
+        decoder_layers.append(nn.ConvTranspose2d(
+            in_channels=in_channels,
+            out_channels=64,  # 固定でもいいし、self.enc_channels[-2] にしてもOK
+            kernel_size=3, stride=2, padding=1, output_padding=1))
         decoder_layers.append(nn.LeakyReLU(0.2))
 
-        # 2. 元の構成を続ける
-        in_channels = reversed_channels[0]
-        for out_channels in reversed_channels[1:]:
-            decoder_layers.append(nn.ConvTranspose2d(in_channels, out_channels, kernel_size=3, stride=2, padding=1, output_padding=1))
-            decoder_layers.append(nn.LeakyReLU(0.2))
-            in_channels = out_channels
+        # 2. 出力層
+        decoder_layers.append(nn.ConvTranspose2d(
+            in_channels=64,
+            out_channels=self.enc_channels[0],  # = 1
+            kernel_size=3, stride=2, padding=1, output_padding=1))
+        decoder_layers.append(nn.Sigmoid())  # 出力を [0, 1] に収める
 
-        # 3. 最後の出力層
-        decoder_layers.append(nn.ConvTranspose2d(in_channels, self.enc_channels[0], kernel_size=3, stride=2, padding=1, output_padding=1))
-        decoder_layers.append(nn.Sigmoid())
 
         self.decoder = nn.Sequential(*decoder_layers)
+
 
 
     def reparameterize(self, mu, logvar):
@@ -66,6 +77,7 @@ class ConvVAE(nn.Module):
     def decode(self, z):
         h = self.fc_decode(z).view(z.size(0), *self._enc_out_shape)
         x_hat = self.decoder(h)
+        x_hat = center_crop_28(x_hat)
         return x_hat
 
     def forward(self, x):
@@ -73,3 +85,15 @@ class ConvVAE(nn.Module):
         z = self.reparameterize(mu, logvar)
         x_hat = self.decode(z)
         return x_hat, mu, logvar
+
+
+# --- 初期化関数の定義 ---
+def init_weights(m):
+    if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
+        nn.init.kaiming_normal_(m.weight, nonlinearity='relu')
+        if m.bias is not None:
+            nn.init.constant_(m.bias, 0)
+    elif isinstance(m, nn.Linear):
+        nn.init.xavier_uniform_(m.weight)
+        if m.bias is not None:
+            nn.init.constant_(m.bias, 0)
